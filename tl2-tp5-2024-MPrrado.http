@@ -1,0 +1,6 @@
+@tl2_tp5_2024_MPrrado_HostAddress = http://localhost:5089
+
+GET {{tl2_tp5_2024_MPrrado_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
