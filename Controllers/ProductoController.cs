@@ -31,11 +31,48 @@ public class ProductoController : ControllerBase
 
     [HttpPut]
     [Route("ModificarProducto")]
-    public IActionResult ModificarProducto(int idProducto)
+    public IActionResult ModificarProducto(int idProducto, [FromForm] Producto productoModificado)
     {
         var listaProductos = productoRepository.GetListaProductos();
-        var producto = listaProductos.Find(p => p.IdProducto == idProducto);
+        if(listaProductos.Find(p => p.GetIdProducto()== idProducto) != null)
+        {
+            productoRepository.ModificarProducto(idProducto,productoModificado);
+            return Ok(productoModificado);
+        }else
+        {
+            return NotFound("Error no se encontro producto con la id ingresada");
+        }
+    }
 
-        return Ok();
+    [HttpGet]
+    [Route("ObtenerProductoSegunID")]
+
+    public IActionResult ObtenerProductoSegunID(int idProducto)
+    {
+        var listaProductos = productoRepository.GetListaProductos();
+        if(listaProductos.Find(p => p.GetIdProducto() == idProducto) != null)
+        {
+            return Ok(productoRepository.GetDetalleProducto(idProducto));
+        }else
+        {
+            return NotFound("Error no se encontro producto con la id ingresada");
+        }
+    }
+
+    [HttpDelete]
+    [Route("EliminarProducto")]
+
+    public IActionResult EliminarProducto(int idProducto)
+    {
+        var listaProductos = productoRepository.GetListaProductos();
+        if(listaProductos.Find(p => p.GetIdProducto() == idProducto) != null)
+        {
+            var productoEliminado= listaProductos.Find(p => p.GetIdProducto() == idProducto);
+            productoRepository.EliminarProducto(idProducto);
+            return Ok(productoEliminado);
+        }else
+        {
+            return NotFound("Error no se encontro producto con la id ingresada");
+        }
     }
 }
