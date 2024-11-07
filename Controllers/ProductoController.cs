@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using SQLitePCL;
 
 [ApiController]
-[Route("[controller]")]
 public class ProductoController : ControllerBase
 {
     private ProductoRepository productoRepository;

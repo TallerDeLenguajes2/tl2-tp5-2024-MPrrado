@@ -1,29 +1,15 @@
 namespace EspacioProductos
 {
-    public class Presupuesto
+    public class PresupuestoDetalle
     {
-        private int idPresupuesto;
-        private string nombreDestinatario;
-        private List<PresupuestoDetalle> detalle;
+        private Producto producto;
+        private int cantidad;
 
-        public double MontoPresupuesto()
-        {   
-            double montoTotal = 0;
-            foreach(var presupuesto in detalle)
-            {
-                montoTotal += presupuesto.Producto.Precio * presupuesto.Cantidad;
-            }
-            return montoTotal;
-        }
-
-        public double MontoPresupuestoConIVA()
+        public PresupuestoDetalle()
         {
-            return MontoPresupuesto() * 1.21;
         }
 
-        public int CantidadProductos()
-        {
-            return detalle.Count();
-        }
+        public Producto Producto { get => producto; set => producto = value; }
+        public int Cantidad { get => cantidad; set => cantidad = value; }
     }
 }
