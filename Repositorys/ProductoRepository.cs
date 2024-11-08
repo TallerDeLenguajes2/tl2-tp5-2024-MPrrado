@@ -59,11 +59,15 @@ namespace EspacioRepositorios
             connection.Open();
             using(SqliteDataReader reader = command.ExecuteReader()) //esto debe ir siempre dentro del using ? por qué?
             {
-                while(reader.Read())
+                if(reader.Read())
                 {
                     producto.Descripcion = reader["Descripcion"].ToString();
                     producto.Precio = Convert.ToInt32(reader["Precio"]);
+                }else
+                {
+                    producto = null;
                 }
+               
 
             }
             connection.Close();

@@ -48,8 +48,7 @@ public class ProductoController : ControllerBase
 
     public IActionResult ObtenerProductoSegunID(int idProducto)
     {
-        var listaProductos = productoRepository.GetListaProductos();
-        if(listaProductos.Find(p => p.GetIdProducto() == idProducto) != null)
+        if(productoRepository.GetDetalleProducto(idProducto) != null)
         {
             return Ok(productoRepository.GetDetalleProducto(idProducto));
         }else
