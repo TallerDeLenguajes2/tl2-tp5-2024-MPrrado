@@ -22,7 +22,7 @@ namespace EspacioRepositorios
             using(SqliteConnection connection = new SqliteConnection(cadenaConexion))
             {
                 connection.Open();
-                string query = "INSERT INTO PresupuestosDetalle (idPresupuesto,idProducto,Cantidad) VALUES(@idPresupuesto,@idProducto,@Cantidad)";
+                string query = "INSERT INTO PresupuestosDetalle (idPresupuesto, idProducto,Cantidad) VALUES(@idPresupuesto,@idProducto,@Cantidad)";
                 using(SqliteCommand command = new SqliteCommand(query,connection))
                 {
                     command.Parameters.Add(new SqliteParameter("@idPresupuesto",idPresupuesto));
@@ -36,10 +36,16 @@ namespace EspacioRepositorios
 
         public void AltaPresupuesto(Presupuesto presupuesto)
         {
-            using(SqliteConnection connection = new SqliteConnection())
+            using(SqliteConnection connection = new SqliteConnection(cadenaConexion))
             {
                 connection.Open();
-                // string query = "SELECT NombreDestinatario,"
+                string query = @"INSERT INTO Presupuestos (NombreDestinatario, FechaCreacion) VALUES(@NombreDestinatario, @FechaCreacion)";
+                using(SqliteCommand command = new SqliteCommand(query,connection))
+                {
+                    command.Parameters.AddWithValue("@NombreDestinatario", presupuesto.NombreDestinatario);
+                    command.Parameters.AddWithValue("@FechaCreacion", DateTime.Now.ToString("yyyy-MM-dd"));
+                    command.ExecuteNonQuery();
+                }
                 connection.Close();
             }
         }
@@ -61,29 +67,38 @@ namespace EspacioRepositorios
             using(SqliteConnection connection = new SqliteConnection(cadenaConexion))
             {
                 connection.Open();
-                string query = "SELECT idPresupuesto, NombreDestinatario, idProducto, Cantidad FROM Presupuestos INNER JOIN PresupuestosDetalle USING(idPresupuesto)";
+                string query = "SELECT idPresupuesto, NombreDestinatario FROM Presupuestos";
                 using(SqliteCommand command = new SqliteCommand(query,connection))
                 {
-                    using(SqliteDataReader reader = command.ExecuteReader())
+                    using(SqliteDataReader reader1 = command.ExecuteReader())
                     {
-                        while(reader.Read())
+                        while(reader1.Read())
                         {
-                            Presupuesto presupuesto = new Presupuesto();
-                            presupuesto.IdPresupuesto = Convert.ToInt32(reader["idPresupuesto"]);
-                            presupuesto.NombreDestinatario = reader["NombreDestinatario"].ToString();
-                            PresupuestoDetalle presupuestoDetalle = new PresupuestoDetalle(); //genero mi detalle del presupuesto para luego agregarlos a la lista de detalle que contiene cada presupuesto
-                            ProductoRepository productoRepository = new ProductoRepository(); //creo una instancia del repositorio de producto para poder obtener la lista de productos
-                            var listaProductos = productoRepository.GetListaProductos();
-                            var productoObtenido = listaProductos.Find(p => p.GetIdProducto() == Convert.ToInt32(reader["idProducto"]));
-                            presupuestoDetalle.Producto = productoObtenido;
-                            presupuestoDetalle.Cantidad = Convert.ToInt32(reader["Cantidad"]);
-                            presupuesto.Detalle.Add(presupuestoDetalle);
+                            int idPresupuesto = reader1.GetInt32(0);
+                            string nombreDestinatario = reader1.GetString(1);
+                            List<PresupuestoDetalle> detalles = new List<PresupuestoDetalle>();
+                            //Todo lo necesario para obtener los productos de un PresupuestoDetalle dado un idPresupuesto
+                            string queryDetalles = @"SELECT idProducto,Descripcion,Precio,Cantidad FROM PresupuestosDetalle
+                            INNER JOIN Productos USING(idProducto)
+                            WHERE idPresupuesto=@idPresupuesto";
+                            var commandDetalles = new SqliteCommand(queryDetalles,connection);
+                            commandDetalles.Parameters.AddWithValue("@idPresupuesto",idPresupuesto);
+                            using(SqliteDataReader reader2 = commandDetalles.ExecuteReader())
+                            {
+                                while(reader2.Read())
+                                {
+                                    Producto productoDetalle = new Producto(reader2.GetInt32(0),reader2.GetString(1), reader2.GetInt32(2));
+                                    detalles.Add(new(productoDetalle,reader2.GetInt32(3)));
+                                }   
+                            }
+                            listaPresupuesto.Add(new(idPresupuesto,nombreDestinatario,detalles));
                         }
 
                     }
                 }
                 connection.Close();
             }
+            return listaPresupuesto;
         }
     }
 }

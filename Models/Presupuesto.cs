@@ -5,14 +5,21 @@ namespace EspacioProductos
         private int idPresupuesto;
         private string nombreDestinatario;
         private List<PresupuestoDetalle> detalle;
+        public List<PresupuestoDetalle> Detalle { get => detalle;}
+        public string NombreDestinatario { get => nombreDestinatario; set => nombreDestinatario = value; }
+        public int IdPresupuesto { get => idPresupuesto;}
 
         public Presupuesto()
         {
+            detalle = new List<PresupuestoDetalle>();
+        }
+        public Presupuesto(int idPresupuesto, string nombreDestinatario, List<PresupuestoDetalle> detalles)
+        {
+            this.idPresupuesto = idPresupuesto;
+            this.nombreDestinatario = nombreDestinatario;
+            detalle = detalles;
         }
 
-        public List<PresupuestoDetalle> Detalle { get => detalle; set => detalle = value; }
-        public string NombreDestinatario { get => nombreDestinatario; set => nombreDestinatario = value; }
-        public int IdPresupuesto { get => idPresupuesto; set => idPresupuesto = value; }
 
         public double MontoPresupuesto()
         {   
