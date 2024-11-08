@@ -48,9 +48,9 @@ public class ProductoController : ControllerBase
 
     public IActionResult ObtenerProductoSegunID(int idProducto)
     {
-        if(productoRepository.GetDetalleProducto(idProducto) != null)
+        if(productoRepository.GetProducto(idProducto) != null)
         {
-            return Ok(productoRepository.GetDetalleProducto(idProducto));
+            return Ok(productoRepository.GetProducto(idProducto));
         }else
         {
             return NotFound("Error no se encontro producto con la id ingresada");
