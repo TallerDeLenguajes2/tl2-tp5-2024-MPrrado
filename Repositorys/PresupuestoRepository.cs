@@ -1,6 +1,8 @@
+using System.Net.Quic;
 using EspacioProductos;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.Sqlite;
+using SQLitePCL;
 
 namespace EspacioRepositorios
 {
@@ -57,7 +59,37 @@ namespace EspacioRepositorios
 
         public Presupuesto GetDetallePresupuesto(int idPresupuesto)
         {
-            throw new NotImplementedException();
+            ProductoRepository productoRepositoryConsulta = new ProductoRepository();
+            int idPresupuestoConsulta = 0;
+            string nombreDestinatarioConsulta = "";
+
+            List<PresupuestoDetalle> detalles = new List<PresupuestoDetalle>();
+            using(SqliteConnection connection = new SqliteConnection(cadenaConexion))
+            {
+                connection.Open();
+                string query = @"SELECT idPresupuesto, NombreDestinatario, idProducto, Cantidad FROM Presupuestos P
+                        INNER JOIN PresupuestosDetalle PD USING(idPresupuesto)
+                        WHERE P.idPresupuesto = @idPresupuesto;";
+                using(SqliteCommand command = new SqliteCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@idPresupuesto",idPresupuesto);
+                    using(SqliteDataReader reader = command.ExecuteReader())
+                    {
+                        while(reader.Read())
+                        {
+                            idPresupuestoConsulta = reader.GetInt32(0);
+                            nombreDestinatarioConsulta = reader.GetString(1);
+                            var productoPresupuesto = productoRepositoryConsulta.GetProducto(reader.GetInt32(2));
+                            int cantidadConsulta = reader.GetInt32(3);
+                            detalles.Add(new(productoPresupuesto, cantidadConsulta));
+                        }
+                    }
+                }
+                connection.Close();
+
+            }
+            Presupuesto presupuesto = new Presupuesto(idPresupuestoConsulta, nombreDestinatarioConsulta, detalles);
+            return presupuesto;
         }
 
         public List<Presupuesto> GetListaPresupuesto()

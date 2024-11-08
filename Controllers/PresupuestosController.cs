@@ -31,12 +31,32 @@ public class PresupuestosController : ControllerBase
     public IActionResult AgregarProductoAPresupuesto(int idPresupuesto, int idProducto, int cantidad)
     {
         ProductoRepository productoRepository = new ProductoRepository();
-        if()
-        if(productoRepository.GetDetalleProducto(idProducto) != null)
+        if(presupuestoRepository.GetListaPresupuesto().Find(p => p.IdPresupuesto == idPresupuesto)!= null)
         {
-
+            if(productoRepository.GetProducto(idProducto) != null)
+            {
+                presupuestoRepository.AgregarProductoYCantidad(idPresupuesto,idProducto,cantidad);
+                return Ok(productoRepository.GetProducto(idProducto));
+            }else
+            {
+                return NotFound("No se encontro producto con idProducto ingresada");
+            }
+        }else
+        {
+            return NotFound("No se encontro presupuesto con la idPresupuesto ingresada");
         }
-        return Ok();
     }
 
+    [HttpGet]
+    [Route("ObtenerDetallePresupuesto")]
+    public IActionResult ObtenerDetallePresupuesto(int idPresupuesto)
+    {
+        if(presupuestoRepository.GetListaPresupuesto().Find(p => p.IdPresupuesto == idPresupuesto)!= null)
+        {
+            return Ok(presupuestoRepository.GetDetallePresupuesto(idPresupuesto));
+        }else
+        {
+            return NotFound("No se encontro presupuesto con la idPresupuesto ingresada");
+        }
+    }
 }
