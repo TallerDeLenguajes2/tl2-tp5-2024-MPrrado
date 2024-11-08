@@ -8,7 +8,7 @@ namespace EspacioRepositorios
         public void AltaProducto(Producto producto);
         public void ModificarProducto(int idProducto, Producto producto);
         public List<Producto> GetListaProductos();
-        public Producto GetDetalleProducto(int idProducto);
+        public Producto GetProducto(int idProducto);
         public void EliminarProducto(int idProducto);
     }
     public class ProductoRepository : IProductoRepository
@@ -48,7 +48,7 @@ namespace EspacioRepositorios
             }
         }
 
-        public Producto GetDetalleProducto(int idProducto)
+        public Producto GetProducto(int idProducto)
         {
            string query = @"SELECT * FROM Productos WHERE idProducto = @idProducto";
            Producto producto = new Producto();
